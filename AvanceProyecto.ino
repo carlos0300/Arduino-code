@@ -27,6 +27,8 @@ const int IN4 = 10;  // Pin digital 10 para controlar sentido giro motor izquier
 int lecturaSensorIzq; // Almacena el valor de la lectura del sensor izquierdo
 int lecturaSensorDer; // Almacena el valor de la lectura del sensor derecho
 int lecturaSensorPos; // Almacena el valor de la lectura del sensor del centro 
+int contador = 0; //almacena el contador de intersecciones para saber la posición, en la que nos encontramos ubicados.
+float tiempo; //almacena el tiempo que tarda antes de cambiar el contador.
 
 const int sensorIzqPin = A1; // El sensor izq irá conectado al pin analógico A0
 const int sensorDerPin = A0; // El sensor derecho irá conectado al pin analógico A1
@@ -51,6 +53,9 @@ void setup()
  
 void loop()
 {
+
+  //Contador de intersecciones
+  
 
   lecturaSensorIR(); // Se lee el valor de los sensores IR
   // Se analiza el resultado de los sensores para hacer que el robot siga la línea negra
@@ -93,10 +98,26 @@ void loop()
     {
       //detenemos el robot por unos instantes
       robotParar();
-      delay(500);
+      delay(1000);
+
+      //el contador funciona cada 5 segundos, antes de ese tiempo no puede cambiar de estado
+      //IMPORTANTE, REVISAR QUE EN CADA ESTACIÓN NO TARDE MÁS DE 5 SEGUNDOS EN GIRAR
+      if(contador == 0)
+      {
+        contador++
+        tiempo = millis();
+      }
+      else
+      {
+        if(tiempo/1000 >5)
+        {
+          contador++
+          tiempo = millis();
+        }
+      }
       
       //mientras no obtengamos una respuesta, spamear "stop"
-      BTserial.print("1");
+      BTserial.print(contador);
       //Serial.println(BTserial.readStringUntil('\n'));
 
       String ruta = BTserial.readStringUntil('\n');
@@ -105,21 +126,21 @@ void loop()
         //Serial.println("Here I am");
         robotIzquierda();
         //de momento se usa delay, pero lo ideal es usar otro método
-        delay(700);
+        delay(1000);
       }
       if(ruta=="D")
       {
         //Serial.println("Here I am");
         robotDerecha();
         //de momento se usa delay, pero lo ideal es usar otro método
-        delay(700);
+        delay(1000);
       }
       if(ruta=="A")
       {
         //Serial.println("Here I am");
         robotAvanza();
         //de momento se usa delay, pero lo ideal es usar otro método
-        delay(700);
+        delay(1000);
       }
         
     }
