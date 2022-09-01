@@ -63,9 +63,9 @@ void loop()
   // si los 3 sensores se encuentran afuera el robot se detiene (Todos zona blanca)
   if(lecturaSensorIzq <= 600 and lecturaSensorDer <= 600 and lecturaSensorPos <=600)
   {
-    robotParar();
-    delay(200);
-    robotRetroceso(); 
+    //robotParar();
+    //delay(400);
+    //robotRetroceso(); 
   }
   else {
     
@@ -99,22 +99,23 @@ void loop()
       //detenemos el robot por unos instantes
       robotParar();
       delay(1000);
-
-      //el contador funciona cada 5 segundos, antes de ese tiempo no puede cambiar de estado
-      //IMPORTANTE, REVISAR QUE EN CADA ESTACIÓN NO TARDE MÁS DE 5 SEGUNDOS EN GIRAR
-      if(contador == 0)
+      if (lecturaSensorIzq > 600 and lecturaSensorDer > 600)
       {
-        contador++
+        if(contador == 0)
+      {
+        contador++;
         tiempo = millis();
       }
       else
       {
-        if(tiempo/1000 >5)
+        if(tiempo/1000 >2)
         {
-          contador++
+          contador++;
           tiempo = millis();
         }
       }
+      //el contador funciona cada 5 segundos, antes de ese tiempo no puede cambiar de estado
+      //IMPORTANTE, REVISAR QUE EN CADA ESTACIÓN NO TARDE MÁS DE 5 SEGUNDOS EN GIRAR
       
       //mientras no obtengamos una respuesta, spamear "stop"
       BTserial.print(contador);
@@ -126,28 +127,46 @@ void loop()
         //Serial.println("Here I am");
         robotIzquierda();
         //de momento se usa delay, pero lo ideal es usar otro método
-        delay(1000);
+        delay(400);
+        robotAvance();
+        delay(200);
+        robotIzquierda();
+        delay(400);
       }
       if(ruta=="D")
       {
-        //Serial.println("Here I am");
         robotDerecha();
-        //de momento se usa delay, pero lo ideal es usar otro método
-        delay(1000);
+        //Serial.println("Here I am");
+        delay(400);
+        robotAvance();
+        delay(200);
+        robotDerecha();
+        delay(400);
       }
       if(ruta=="A")
       {
         //Serial.println("Here I am");
-        robotAvanza();
+        robotAvance();
         //de momento se usa delay, pero lo ideal es usar otro método
         delay(1000);
       }
+      if(ruta=="F")
+      {
+        contador=0;
+        delay(4000);
+      }
         
+    }else{
+      robotRetroceso();
+      delay(400);
     }
+      
+      }
+      
     
   }
  
-
+Serial.println(contador);
     /* Si el izquierdo retorna 0 (zona blanca) y el derecho 1 (negra) el robot gira derecha
     if (lecturaSensorIzq <=600 and lecturaSensorDer >= 601)
     {
